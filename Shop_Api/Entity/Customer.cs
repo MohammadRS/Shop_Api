@@ -5,10 +5,6 @@ namespace Shop_Api.Entity
 {
     public class Customer
     {
-        public Customer()
-        {
-
-        }
 
         [Key]
         public int CustomerId { get; private set; }
@@ -22,5 +18,18 @@ namespace Shop_Api.Entity
         public string ZipCode { get; private set; }
 
         public List<Orders> Orders { get; set; }
+
+        public Customer(int customerId, string firstName, string lastName, string email, string phone, string address, string city, string state, string zipCode)
+        {
+            CustomerId = customerId;
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+            Phone = phone;
+            Address = address;
+            City = city;
+            State = state;
+            ZipCode = zipCode;
+        }
     }
 }
