@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shop_Api.Entity;
+using System.Net;
+using Shop_Api.Contracts;
 
 namespace Shop_Api.Controllers
 {
@@ -14,48 +16,64 @@ namespace Shop_Api.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly ShopContext _context;
+        private readonly ICustomerRepository _customerRepository;
 
-        public CustomersController(ShopContext context)
+        public CustomersController(ICustomerRepository customerRepository)
         {
-            _context = context;
+            _customerRepository = customerRepository;
         }
 
         [HttpGet]
         public IActionResult GetCustomer()
         {
-            return new ObjectResult(_context.Customers);
+            var result = new ObjectResult(_customerRepository.GetAll())
+            {
+                StatusCode = (int)HttpStatusCode.OK
+            };
+            Request.HttpContext.Response.Headers.Add("X-Count", _customerRepository.CountCustomer().ToString());
+            Request.HttpContext.Response.Headers.Add("X-Name", "Reza Mohammady");
+
+            return result;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer(int id)
         {
-            var customer = await _context.Customers.SingleOrDefaultAsync(c => c.CustomerId == id);
-            return Ok(customer);
+            if (await CustomerExists(id))
+            {
+                var customer = await _customerRepository.Find(id);
+                return Ok(customer);
+            }
+            return NotFound();
+
+        }
+
+        private async Task<bool> CustomerExists(int id)
+        {
+            return await _customerRepository.IsExists(id);
         }
 
         [HttpPost]
         public async Task<IActionResult> PostCustomer(Customer customer)
         {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _customerRepository.Add(customer);
             return CreatedAtAction("GetCustomer", new { id = customer.CustomerId }, customer);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
-            _context.Entry(customer).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await _customerRepository.Update(customer);
             return Ok(customer);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            await _customerRepository.Remove(id);
             return Ok();
         }
 
