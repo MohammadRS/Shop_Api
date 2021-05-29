@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <dl>
+        <dt>Name : </dt>
+        <dd><input type="text" id="name" class="form-control" /></dd>
+
+        <dt>Family : </dt>
+        <dd><input type="text" id="family" class="form-control" /></dd>
+
+        <dt>Mobile : </dt>
+        <dd><input type="text" id="mobile" class="form-control" /></dd>
+
+        <dt>Image : </dt>
+        <dd><input type="file" id="image" class="form-control" /></dd>
+
+        <dt> </dt>
+        <dd>
+            <a class="btn btn-outline-success" onclick="Save()">Save</a>
+        </dd>
+    </dl>
+</div>
+<div class="row">
+    <table class="table table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Family</th>
+            <th>Mobile</th>
+            <th>Image</th>
+        </tr>
+        <tbody id="tb">
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(function() {
+            $.getJSON("/Api/People",
+                function(data) {
+                    $.each(data,
+                        function(i, item) {
+                            console.log(item);
+                            var append = "<tr>" +
+                                "<td>" +
+                                item.name +
+                                "</td>" +
+                                "<td>" +
+                                item.family +
+                                "</td>" +
+                                "<td>" +
+                                item.mobile +
+                                "</td>" +
+                                "<td><img style='width:90px' src='/images/" +
+                                item.imageName +
+                                "'/></td>" +
+                                "</tr>";
+                            $("#tb").append(append);
+                        });
+                });
+        });
+
+
+        function Save() {
+
+            var model = new FormData();
+            model.append("Name", $("#name").val());
+            model.append("Family", $("#family").val());
+            model.append("Mobile", $("#mobile").val());
+            model.append("Image", $("#image")[0].files[0]);
+
+            $.ajax({
+                url: "/Api/People",
+                type: "POST",
+                dataType: "json",
+                data: model,
+                processData: false,
+                contentType: false,
+                complete: function(data) {
+
+                    var append = "<tr>" +
+                        "<td>" +
+                        data.responseJSON.name +
+                        "</td>" +
+                        "<td>" +
+                        data.responseJSON.family +
+                        "</td>" +
+                        "<td>" +
+                        data.responseJSON.mobile +
+                        "</td>" +
+                        "<td><img style='width:90px' src='/images/" +
+                        data.responseJSON.imageName +
+                        "'/></td>" +
+                        "</tr>";
+                    $("#tb").append(append);
+
+                    $("#name").val("");
+                    $("#family").val("");
+                    $("#mobile").val("");
+                                    }
+
+            });
+
+        }
+    </script>
+}

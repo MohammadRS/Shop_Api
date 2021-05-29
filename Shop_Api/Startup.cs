@@ -95,7 +95,7 @@ namespace Shop_Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My First Swagger");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shop_Api");
             });
 
             app.UseCors("EnableCors");
