@@ -12,7 +12,7 @@ namespace ServiceHost.Models
 {
     public class CustomersRepository
     {
-        private string apiUrl = "http://localhost:14271/api/customers";
+        private string apiUrl = "http://localhost:5395/api/customers";
         private HttpClient _client;
 
         public CustomersRepository()
@@ -23,6 +23,8 @@ namespace ServiceHost.Models
 
         public List<Customer> GetAllCustomer(string token)
         {
+
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var result = _client.GetStringAsync(apiUrl).Result;
 
@@ -62,6 +64,7 @@ namespace ServiceHost.Models
         {
             var res = _client.DeleteAsync(apiUrl + "/" + customerId).Result;
         }
+
     }
 
     public class Customer

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Shop_Api.Contracts;
 using Shop_Api.Data;
 using Shop_Api.Entity;
@@ -12,11 +13,14 @@ namespace Shop_Api.Repository
     public class CustomerRepository : ICustomerRepository
     {
         private ShopContext _context;
+        private IMemoryCache _cache;
 
-        public CustomerRepository(ShopContext context)
+        public CustomerRepository(ShopContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
+
 
         public async Task<Customer> Add(Customer customer)
         {
